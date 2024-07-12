@@ -19,7 +19,9 @@
           <td>{{ todo.id }}</td>
           <td>{{ todo.title }}</td>
           <td>{{ todo.completed ? 'Oui' : 'Non' }}</td>
-          <td>{{ todo.userId }}</td>
+          <td>
+            <router-link :to="'/users?userid=' + todo.userId" class="action-link">Voir l'Utilisateur</router-link>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -27,17 +29,19 @@
 </template>
 
 <script setup lang="ts">
-import { useTodos } from '../composables/todos';
+import { Todos } from '../composables/todos';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-const { todos, loading, error, fetchTodos, fetchTodosByUserId, cancelRequest } = useTodos();
+const { todos, loading, error, fetchTodos, fetchTodosByUserId, cancelRequest } = Todos();
 const route = useRoute();
 
 onMounted(() => {
   const userId = parseInt(route.query.userid as string);
   if (!isNaN(userId)) {
     fetchTodosByUserId(userId);
+  } else {
+    Todos();
   }
 });
 </script>
@@ -65,5 +69,9 @@ onMounted(() => {
 
 .todos-page th {
   background-color: #f2f2f2;
+}
+
+.todos-page .btn {
+  margin-right: 10px;
 }
 </style>

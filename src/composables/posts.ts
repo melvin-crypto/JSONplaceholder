@@ -15,7 +15,7 @@ interface Post {
   body: string;
 }
 
-export function usePosts() {
+export function Posts() {
   const posts = ref<Post[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
@@ -77,6 +77,34 @@ export function usePosts() {
     }
   };
 
+  const fetchPostById = async (postId: number) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`, {
+        signal: controller.signal,
+      });
+      const data = await response.json();
+
+      const parsedData = PostSchema.safeParse(data);
+
+      if (!parsedData.success) {
+        throw new Error('Invalid data structure');
+      }
+
+      posts.value = [parsedData.data]; // Set the single post as the array
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        error.value = 'Request was aborted';
+      } else {
+        error.value = err.message;
+      }
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const cancelRequest = () => {
     controller.abort();
   };
@@ -87,6 +115,7 @@ export function usePosts() {
     error,
     fetchPosts,
     fetchPostsByUserId,
+    fetchPostById,
     cancelRequest,
   };
 }

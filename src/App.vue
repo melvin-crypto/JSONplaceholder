@@ -2,7 +2,7 @@
   <div id="app">
     <nav class="main-menu">
       <ul>
-        <li><router-link to="/" exact>Utilisateurs</router-link></li> |
+        <li><router-link to="/users" exact>Utilisateurs</router-link></li> |
         <li><router-link to="/posts">Posts</router-link></li> |
         <li><router-link to="/comments">Commentaires</router-link></li> |
         <li><router-link to="/photos">Photos</router-link></li> |
@@ -15,9 +15,9 @@
 </template>
 
 <script setup>
-import { useUsers } from './composables/users';
+import { Users } from './composables/users';
 
-const { loading, error, fetchUsers, cancelRequest } = useUsers();
+const { loading, error, fetchUsers, cancelRequest } = Users();
 </script>
 
 <style scoped>

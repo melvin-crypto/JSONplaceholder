@@ -17,15 +17,16 @@ interface Photo {
   thumbnailUrl: string;
 }
 
-export function usePhotos() {
+export function Photos() {
   const photos = ref<Photo[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
-  const controller = new AbortController();
+  let controller: AbortController | null = null;
 
   const fetchPhotos = async () => {
     loading.value = true;
     error.value = null;
+    controller = new AbortController();
 
     try {
       const response = await fetch('https://jsonplaceholder.typicode.com/photos', {
@@ -33,7 +34,35 @@ export function usePhotos() {
       });
       const data = await response.json();
 
-      // Validate data
+      const parsedData = z.array(PhotoSchema).safeParse(data);
+
+      if (!parsedData.success) {
+        throw new Error('Invalid data structure');
+      }
+
+      photos.value = parsedData.data;
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        error.value = 'Request was aborted';
+      } else {
+        error.value = err.message;
+      }
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const fetchPhotosByAlbumId = async (albumId: number) => {
+    loading.value = true;
+    error.value = null;
+    controller = new AbortController();
+
+    try {
+      const response = await fetch(`https://jsonplaceholder.typicode.com/photos?albumId=${albumId}`, {
+        signal: controller.signal,
+      });
+      const data = await response.json();
+
       const parsedData = z.array(PhotoSchema).safeParse(data);
 
       if (!parsedData.success) {
@@ -53,7 +82,10 @@ export function usePhotos() {
   };
 
   const cancelRequest = () => {
-    controller.abort();
+    if (controller) {
+      controller.abort();
+      controller = null;
+    }
   };
 
   return {
@@ -61,6 +93,7 @@ export function usePhotos() {
     loading,
     error,
     fetchPhotos,
+    fetchPhotosByAlbumId,
     cancelRequest,
   };
 }

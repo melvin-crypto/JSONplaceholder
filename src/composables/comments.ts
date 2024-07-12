@@ -17,7 +17,7 @@ interface Comment {
   body: string;
 }
 
-export function useComments() {
+export function Comments() {
   const comments = ref<Comment[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);

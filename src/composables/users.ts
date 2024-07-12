@@ -25,7 +25,7 @@ const UserSchema = z.object({
   }),
 });
 
-export function useUsers() {
+export function Users() {
   const users = ref([]);
   const loading = ref(false);
   const error = ref(null);
@@ -60,6 +60,32 @@ export function useUsers() {
     }
   };
 
+  const fetchUserById = async (userId: number) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+      const data = await response.json();
+
+      const parsedData = UserSchema.safeParse(data);
+
+      if (!parsedData.success) {
+        throw new Error('Invalid data structure');
+      }
+
+      users.value = [parsedData.data];
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        error.value = 'Request was aborted';
+      } else {
+        error.value = err.message;
+      }
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const cancelRequest = () => {
     if (controller) {
       controller.abort();
@@ -72,6 +98,7 @@ export function useUsers() {
     loading,
     error,
     fetchUsers,
+    fetchUserById,
     cancelRequest,
   };
 }

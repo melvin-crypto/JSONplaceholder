@@ -13,7 +13,7 @@ interface Album {
   title: string;
 }
 
-export function useAlbums() {
+export function Albums() {
   const albums = ref<Album[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);

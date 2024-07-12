@@ -50,10 +50,21 @@
 </template>
 
 <script setup lang="ts">
-import { useUsers } from '../composables/users';
-import { RouterLink } from 'vue-router';
+import { Users } from '../composables/users';
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
-const { users, loading, error, fetchUsers, cancelRequest } = useUsers();
+const { users, loading, error, fetchUsers, fetchUserById, cancelRequest } = Users();
+const route = useRoute();
+
+onMounted(() => {
+  const userId = parseInt(route.query.userid as string);
+  if (!isNaN(userId)) {
+    fetchUserById(userId);
+  } else {
+    Users();
+  }
+});
 </script>
 
 <style scoped>
@@ -83,20 +94,5 @@ const { users, loading, error, fetchUsers, cancelRequest } = useUsers();
 
 .user-page .btn {
   margin-right: 10px;
-}
-
-.action-link {
-  display: block;
-  margin-bottom: 5px;
-  padding: 5px 10px;
-  background-color: #007bff;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 3px;
-  text-align: center;
-}
-
-.action-link:hover {
-  background-color: #0056b3;
 }
 </style>

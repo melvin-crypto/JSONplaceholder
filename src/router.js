@@ -7,7 +7,7 @@ import AlbumPage from './pages/Album.vue';
 import TodoPage from './pages/Todo.vue';
 
 const routes = [
-  { path: '/', component: UsersPage },
+  { path: '/users', component: UsersPage },
   { path: '/posts', component: PostsPage },
   { path: '/comments', component: CommentsPage },
   { path: '/photos', component: PhotosPage },

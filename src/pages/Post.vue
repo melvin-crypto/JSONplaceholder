@@ -19,7 +19,9 @@
           <td>{{ post.id }}</td>
           <td>{{ post.title }}</td>
           <td>{{ post.body }}</td>
-          <td>{{ post.userId }}</td>
+          <td>
+            <router-link :to="'/users?userid=' + post.userId" class="action-link">Voir l'Utilisateur</router-link>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -27,17 +29,20 @@
 </template>
 
 <script setup lang="ts">
-import { usePosts } from '../composables/posts';
+import { Posts } from '../composables/posts';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-const { posts, loading, error, fetchPosts, fetchPostsByUserId, cancelRequest } = usePosts();
+const { posts, loading, error, fetchPosts, fetchPostsByUserId, fetchPostById, cancelRequest } = Posts();
 const route = useRoute();
 
 onMounted(() => {
   const userId = parseInt(route.query.userid as string);
+  const postId = parseInt(route.query.postid as string);
   if (!isNaN(userId)) {
     fetchPostsByUserId(userId);
+  } else if (!isNaN(postId)) {
+    fetchPostById(postId);
   }
 });
 </script>
@@ -65,5 +70,13 @@ onMounted(() => {
 
 .post-page th {
   background-color: #f2f2f2;
+}
+
+.post-page .btn {
+  margin-right: 10px;
+}
+
+.post-page a:hover {
+  text-decoration: underline;
 }
 </style>

@@ -15,15 +15,16 @@ interface Todo {
   completed: boolean;
 }
 
-export function useTodos() {
+export function Todos() {
   const todos = ref<Todo[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
-  const controller = new AbortController();
+  let controller: AbortController | null = null;
 
   const fetchTodos = async () => {
     loading.value = true;
     error.value = null;
+    controller = new AbortController();
 
     try {
       const response = await fetch('https://jsonplaceholder.typicode.com/todos', {
@@ -52,6 +53,7 @@ export function useTodos() {
   const fetchTodosByUserId = async (userId: number) => {
     loading.value = true;
     error.value = null;
+    controller = new AbortController();
 
     try {
       const response = await fetch(`https://jsonplaceholder.typicode.com/todos?userId=${userId}`, {
@@ -78,7 +80,10 @@ export function useTodos() {
   };
 
   const cancelRequest = () => {
-    controller.abort();
+    if (controller) {
+      controller.abort();
+      controller = null;
+    }
   };
 
   return {

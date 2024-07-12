@@ -17,19 +17,19 @@
         <tr v-for="album in albums" :key="album.id">
           <td>{{ album.id }}</td>
           <td>{{ album.title }}</td>
-          <td>{{ album.userId }}</td>
-        </tr>
+          <router-link :to="'/users?userid=' + album.userId" class="action-link">Voir l'Utilisateur</router-link>
+        </tr> 
       </tbody>
     </table>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAlbums } from '../composables/albums';
+import { Albums } from '../composables/albums';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-const { albums, loading, error, fetchAlbums, fetchAlbumsByUserId, cancelRequest } = useAlbums();
+const { albums, loading, error, fetchAlbums, fetchAlbumsByUserId, cancelRequest } = Albums();
 const route = useRoute();
 
 onMounted(() => {
@@ -37,7 +37,7 @@ onMounted(() => {
   if (!isNaN(userId)) {
     fetchAlbumsByUserId(userId);
   } else {
-    const { users, loading, error, fetchAlbums, cancelRequest } = useAlbums();
+     Albums();
   }
 });
 </script>
